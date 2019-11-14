@@ -65,7 +65,7 @@
                 var count = 0;
                 let port = 3000;
                 let ip_address = "192.168.1.142";
-                var ws = new WebSocket('ws://' + ip_address + ":" + port);
+                var ws = new WebSocket('wss://' + ip_address + ":" + port);
                 function getDexterStatus() { if(ws.readyState == 1){ ws.send("1 " + (count++) + " 1 undefined g ;"); } }
                 ws.binaryType = "arraybuffer"; //avoids the blob
                 ws.onopen = function () {
