@@ -1,0 +1,111 @@
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+        <script type="text/javascript" src="node_modules/three/build/three.js"></script>
+        <script type="text/javascript" src="node_modules/three/examples/js/controls/DragControls.js"></script>
+        <script type="text/javascript" src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
+
+        <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="node_modules/golden-layout/dist/goldenlayout.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="node_modules/golden-layout/src/css/goldenlayout-base.css" />
+        <link type="text/css" rel="stylesheet" href="node_modules/golden-layout/src/css/goldenlayout-dark-theme.css" />
+
+        <link data-name="vs/editor/editor.main" rel="stylesheet" href="node_modules/monaco-editor/min/vs/editor/editor.main.css">
+        <script>var require = { paths: { 'vs': 'node_modules/monaco-editor/min/vs' } };</script>
+        <script type="text/javascript" src="node_modules/monaco-editor/min/vs/loader.js"></script>
+        <script type="text/javascript" src="node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+        <script type="text/javascript" src="node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+
+        <script type="text/javascript" src="js/dexterView.js"></script>
+    </head>
+
+    <body onload="initialize();">
+        <script>
+            var config = {
+                content: [{
+                    type: 'row',
+                    content:[{
+                        type: 'component',
+                        componentName: 'robotView',
+                        title:'Dexter View'
+                    },{
+                        type: 'component',
+                        componentName: 'codeEditor',
+                        title:'Code Editor'
+                    }]
+                }]
+            };
+
+            var robotContainer;
+            function initialize(){
+                // Set up the Windowing System  ---------------------------------------
+                var myLayout = new GoldenLayout( config );
+
+                // Set up the Monaco Code Editor
+                myLayout.registerComponent('codeEditor', function(container){
+                    setTimeout(()=>{
+                        monaco.editor.create(container.getElement().get(0), {
+                            value: "function hello() {\n\talert('Hello world!');\n}",
+                            language: "javascript",
+                            theme: "vs-dark",
+                            automaticLayout: true
+                        });
+                    }, 0.1);
+                });
+
+                // Set up the 3D Viewport into the Robot
+                myLayout.registerComponent('robotView', function(container){
+                    setTimeout(()=>{ let dexEnv = new DexterEnvironment(container); }, 0.1);
+                });
+
+                // Set up the Websocket Connection to the Dexter ----------------------
+                var pulse;
+                var count = 0;
+                let port = 3000;
+                let ip_address = "192.168.1.142";
+                var ws = new WebSocket('ws://' + ip_address + ":" + port);
+                function getDexterStatus() { if(ws.readyState == 1){ ws.send("1 " + (count++) + " 1 undefined g ;"); } }
+                ws.binaryType = "arraybuffer"; //avoids the blob
+                ws.onopen = function () {
+                    self.status = "open";
+                    getDexterStatus();
+                }
+                ws.onerror = function (error) {
+                    self.status = "error" + error;
+                    console.error(error);
+                }
+                ws.onmessage = function (socket) {
+                    let msg = "" //start new message
+                    data = new Int32Array(socket.data);
+                    //if (data.length == 0) { clearInterval(pulse); console.log("Connection to Dexter Lost"); return; }
+                    let op = String.fromCharCode(data[4]);
+                    if (data[5] > 0) { msg += "Error:" + data[5] + " on oplet:" + op; }
+                    switch (op) {
+                        case 'r':
+                            //console.log("r " + String.fromCharCode.apply(null, new Uint8Array(msg.data.slice(7*4))))
+                            let l = data[6]; //length of returned data
+                            msg += '-> r ' + l + ' "';
+                            msg += String.fromCharCode.apply(null, new Uint8Array(socket.data.slice(7 * 4, 7 * 4 + l)));
+                            msg += '"';
+                            break;
+                        case 'g':
+                            myLayout.eventHub.emit( 'poseUpdate', { pose: data } );
+                            break;
+                        //1,0,1531787828,349602,103,0,0,0,0,0,0,0,0,0,3703,2967,0,0,0,2147483647,0,0,0,0,293,56,0,0,0,2147483647,0,0,0,0,809,3063,0,0,0,2147483647,0,0,0,0,1682,3675,0,0,0,2147483647,0,0,0,0,1990,218,0,0,0,2147483647
+                    }
+                    //console.log(data);
+                    if (msg) console.log(msg);//out(msg)
+                    //ws.close()
+                }
+
+                myLayout.init();
+
+                setTimeout(()=>{
+                    pulse = setInterval(function(){ getDexterStatus(); }, 16);
+                }, 2.0);
+            }
+        </script>
+    </body>
+</html>
