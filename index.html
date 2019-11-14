@@ -33,31 +33,59 @@
                     },{
                         type: 'component',
                         componentName: 'codeEditor',
-                        title:'Code Editor'
+                        title:'Code Editor',
+                        componentState: { code: "function Start() {\n\tconsole.log('Start!');\n}\n\nfunction Update() {\n\tconsole.log('Update!');\n}" }
                     }]
-                }]
+                }],
+                settings:{
+                    showPopoutIcon: false,
+                    showMaximiseIcon: true,
+                    showCloseIcon: false
+                }
             };
 
-            var robotContainer;
+            var robotContainer, monacoEditor, loadedState, dexterViewport;
+            function Start(){} function Update(){}
             function initialize(){
                 // Set up the Windowing System  ---------------------------------------
-                var myLayout = new GoldenLayout( config );
+                loadedState = localStorage.getItem( 'savedState' );
+                if( loadedState !== null ) {
+                    myLayout = new GoldenLayout( JSON.parse( loadedState ) );
+                } else {
+                    myLayout = new GoldenLayout( config );
+                }
+
+                // Set up saving code changes to the localStorage
+                myLayout.on( 'stateChanged', function(){
+                    var state = JSON.stringify( myLayout.toConfig() );
+                    localStorage.setItem( 'savedState', state );
+                });
 
                 // Set up the Monaco Code Editor
-                myLayout.registerComponent('codeEditor', function(container){
+                myLayout.registerComponent('codeEditor', function(container, state){
                     setTimeout(()=>{
-                        monaco.editor.create(container.getElement().get(0), {
-                            value: "function hello() {\n\talert('Hello world!');\n}",
+                        monacoEditor = monaco.editor.create(container.getElement().get(0), {
+                            value: state.code,
                             language: "javascript",
                             theme: "vs-dark",
                             automaticLayout: true
                         });
+
+                        window.eval(state.code); 
+
+                        setInterval(()=>{ 
+                            container.setState({
+                                code: monacoEditor.getValue()
+                            });
+
+                            window.eval(monacoEditor.getValue()); 
+                        }, 2000);
                     }, 0.1);
                 });
 
                 // Set up the 3D Viewport into the Robot
                 myLayout.registerComponent('robotView', function(container){
-                    setTimeout(()=>{ let dexEnv = new DexterEnvironment(container); }, 0.1);
+                    setTimeout(()=>{ dexterViewport = new DexterEnvironment(container); }, 1.3);
                 });
 
                 // Set up the Websocket Connection to the Dexter ----------------------
@@ -101,6 +129,10 @@
                 }
 
                 myLayout.init();
+                setTimeout(()=>{
+                    myLayout.eventHub.on('Start',  (data) => { Start();  });
+                    myLayout.eventHub.on('Update', (data) => { Update(); });
+                }, 0.2);
 
                 setTimeout(()=>{
                     pulse = setInterval(function(){ getDexterStatus(); }, 16);

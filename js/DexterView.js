@@ -79,7 +79,8 @@ var Environment = function (goldenContainer) {
   }
   
   var DexterEnvironment = function (goldenContainer) {
-    this.environment = new Environment(goldenContainer);
+    this.goldenContainer = goldenContainer;
+    this.environment = new Environment(this.goldenContainer);
     this.updating = false;
   
     this.IKJoints = [];
@@ -106,7 +107,8 @@ var Environment = function (goldenContainer) {
       this.environment.scene.add(target);
       this.environment.draggableObjects.unshift(target);
 
-      goldenContainer.layoutManager.eventHub.on('poseUpdate', (data) => this.setArmAngles(data));
+      this.goldenContainer.layoutManager.eventHub.on('poseUpdate', (data) => this.setArmAngles(data));
+      this.goldenContainer.layoutManager.eventHub.emit('Start');
     }
   
     this.addJoint = function (base, position, axis, limits, size, graphicsOffset) {
@@ -144,6 +146,7 @@ var Environment = function (goldenContainer) {
   
     this.animate = function animatethis() {
       requestAnimationFrame(() => this.animate());
+      this.goldenContainer.layoutManager.eventHub.emit('Update');
       this.environment.renderer.render(this.environment.scene, this.environment.camera);
     };
   
