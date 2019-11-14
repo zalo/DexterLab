@@ -1,2 +1,2 @@
-# DexterLab
- A workbench for the Dexter Robot
+# [DexterLab](https://zalo.github.io/DexterLab/)
+ A workbench for viewing and programming the Dexter Robot
