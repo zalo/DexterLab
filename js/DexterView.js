@@ -98,7 +98,7 @@ var Environment = function (goldenContainer) {
       this.fourthJoint  = this.addJoint(this.thirdJoint,  [2.984276, 30.01859, 0.0], [1, 0, 0], [-130, 130], [0.05, 0.05, 0.05], [4.8, 0.17, 0]);
       this.fifthJoint   = this.addJoint(this.fourthJoint, [4.333822, 4.200262, 0.0], [0, 1, 0], [-180, 180], [0.1, 0.035, 0.035], [3.156178, 0.3, 0]);
       this.endEffector = new THREE.Group();
-      fifthJoint.add(this.endEffector);
+      this.fifthJoint.add(this.endEffector);
       this.endEffector.position.set(8.3, 1.0, 0.0);
   
       //var target = new THREE.Mesh(this.boxGeometry, new THREE.MeshPhongMaterial({ color: 0x3399dd }));
