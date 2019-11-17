@@ -92,11 +92,11 @@ var Environment = function (goldenContainer) {
     this.initArm = function () {
       //Assemble the Robot Arm
       this.base         = this.addJoint(this.environment.scene, [0, 0, 0], [0, 1, 0], [0, 0], [0.05, 0.1, 0.05], [0, 5, 0]);
-      this.firstJoint   = this.addJoint(base,        [0, 11.52001, 0], [0, 1, 0], [-180, 180], [0.1, 0.1, 0.1], [0, 2.5, 0]);
-      this.secondJoint  = this.addJoint(firstJoint,  [-6.55, 4.6, 0.0], [1, 0, 0], [-90, 90], [0.1, 0.45, 0.1], [-3.450041, 14.7, 0]);
-      this.thirdJoint   = this.addJoint(secondJoint, [1.247041, 32.02634, -0.0739485], [1, 0, 0], [-150, 150], [0.05, 0.35, 0.05], [2.8, 15.14, 0]);
-      this.fourthJoint  = this.addJoint(thirdJoint,  [2.984276, 30.01859, 0.0], [1, 0, 0], [-130, 130], [0.05, 0.05, 0.05], [4.8, 0.17, 0]);
-      this.fifthJoint   = this.addJoint(fourthJoint, [4.333822, 4.200262, 0.0], [0, 1, 0], [-180, 180], [0.1, 0.035, 0.035], [3.156178, 0.3, 0]);
+      this.firstJoint   = this.addJoint(this.base,        [0, 11.52001, 0], [0, 1, 0], [-180, 180], [0.1, 0.1, 0.1], [0, 2.5, 0]);
+      this.secondJoint  = this.addJoint(this.firstJoint,  [-6.55, 4.6, 0.0], [1, 0, 0], [-90, 90], [0.1, 0.45, 0.1], [-3.450041, 14.7, 0]);
+      this.thirdJoint   = this.addJoint(this.secondJoint, [1.247041, 32.02634, -0.0739485], [1, 0, 0], [-150, 150], [0.05, 0.35, 0.05], [2.8, 15.14, 0]);
+      this.fourthJoint  = this.addJoint(this.thirdJoint,  [2.984276, 30.01859, 0.0], [1, 0, 0], [-130, 130], [0.05, 0.05, 0.05], [4.8, 0.17, 0]);
+      this.fifthJoint   = this.addJoint(this.fourthJoint, [4.333822, 4.200262, 0.0], [0, 1, 0], [-180, 180], [0.1, 0.035, 0.035], [3.156178, 0.3, 0]);
       this.endEffector = new THREE.Group();
       fifthJoint.add(this.endEffector);
       this.endEffector.position.set(8.3, 1.0, 0.0);
