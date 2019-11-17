@@ -1,9 +1,9 @@
-var robotContainer, monacoEditor, loadedState, 
+var myLayout, monacoEditor, loadedState, 
 dexterViewport, consoleContainer, gui, dexWS, 
 GUIState, connectWebsocket, disconnectWebsocket, 
 sendCommand, count = 0, focused = true;
 
-var starterCode = 
+let starterCode = 
 `// Welcome to DexBench Programming Environment!
 // Please make sure your Dexter is turned on and the 
 // 'IPAddr' is set to the Dexter's IP.  Then press "Connect".
@@ -70,19 +70,54 @@ function initialize(){
 
     // Set up saving code changes to the localStorage
     myLayout.on( 'stateChanged', function(){
-        var state = JSON.stringify( myLayout.toConfig() );
-        localStorage.setItem( 'savedState', state );
+        localStorage.setItem( 'savedState', JSON.stringify( myLayout.toConfig()));
     });
 
     // Set up the Monaco Code Editor
     myLayout.registerComponent('codeEditor', function(container, state){
         setTimeout(()=>{
 
+            monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+                allowNonTsExtensions: true,
+                allowJs: true,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
+            });
+            //monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+
+            // Golden Layout Typescript definitions...
+            fetch("/node_modules/golden-layout/index.d.ts").then((response) => {
+                response.text().then(function (text) {
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/golden-layout/index.d.ts');
+                });
+            }).catch(error => console.log(error.message));
+
+            // Three.js Typescript definitions...
+            fetch("/node_modules/three/build/three.d.ts").then((response) => {
+                response.text().then(function (text) {
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/three/build/three.d.ts');
+                });
+            }).catch(error => console.log(error.message));
+
+            // Add Symbols from ControlKit.js...
+            fetch("/node_modules/controlkit/bin/controlkit.d.ts").then((response) => {
+                response.text().then(function (text) {
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/controlkit/bin/controlkit.d.ts');
+                });
+            }).catch(error => console.log(error.message));
+
+            // Add Symbols from this file...
+            fetch("/js/index.ts").then((response) => {
+                response.text().then(function (text) {
+                    monaco.editor.createModel(text, "javascript");
+                });
+            }).catch(error => console.log(error.message));
+
             monacoEditor = monaco.editor.create(container.getElement().get(0), {
                 value: state.code,
                 language: "javascript",
                 theme: "vs-dark",
-                automaticLayout: true
+                automaticLayout: true//,
+                //model: null
             });
 
             window.eval(state.code); 
@@ -141,7 +176,7 @@ function initialize(){
           };
 
         // Overwrite the existing logging/error behaviour
-        var realConsoleLog = console.log;
+        let realConsoleLog = console.log;
         console.log = function(message) {
             let newline = document.createElement("div");
             newline.innerHTML = "&gt;  " + JSON.stringify(message, getCircularReplacer());

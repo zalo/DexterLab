@@ -54,6 +54,7 @@ node_modules/**/*
 # Golden-Layout Scripts
 !node_modules/golden-layout/
 !node_modules/golden-layout/*/
+!node_modules/golden-layout/index.d.ts
 !node_modules/golden-layout/dist/
 !node_modules/golden-layout/dist/*
 # Golden-Layout Scripts
