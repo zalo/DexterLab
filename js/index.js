@@ -44,25 +44,28 @@ function initialize(){
                 content:[{
                     type: 'component',
                     componentName: 'robotView',
-                    title:'Dexter View'
+                    title:'Dexter View',
+                    isClosable: false
                 },{
                     type: 'column',
                     content:[{
                         type: 'component',
                         componentName: 'codeEditor',
                         title:'Code Editor',
-                        componentState: { code: starterCode }
+                        componentState: { code: starterCode },
+                        isClosable: false
                     },{
                         type: 'component',
                         componentName: 'console',
                         title:'Console',
-                        height: 20.0
+                        height: 20.0,
+                        isClosable: false
                     }]
                 }]
             }],
             settings:{
                 showPopoutIcon: false,
-                showMaximiseIcon: true,
+                showMaximiseIcon: false,
                 showCloseIcon: false
             }
         } );
@@ -120,8 +123,6 @@ function initialize(){
                 //model: null
             });
 
-            window.eval(state.code); 
-
             // Refresh the code once every couple seconds if necessary
             setInterval(()=>{ 
                 let newCode = monacoEditor.getValue();
@@ -139,6 +140,8 @@ function initialize(){
                     window.eval(newCode); 
                 }
             }, 2000);
+
+            window.eval(state.code); 
         }, 1);
     });
 
