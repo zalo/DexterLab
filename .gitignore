@@ -74,6 +74,12 @@ node_modules/**/*
 !node_modules/jquery/dist/
 !node_modules/jquery/dist/*
 
+# ControlKit Bin
+!node_modules/controlkit/
+!node_modules/controlkit/*/
+!node_modules/controlkit/bin/
+!node_modules/controlkit/bin/*
+
 
 jspm_packages/
 

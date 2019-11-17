@@ -100,12 +100,12 @@ var Environment = function (goldenContainer) {
       fifthJoint.add(this.endEffector);
       this.endEffector.position.set(8.3, 1.0, 0.0);
   
-      var target = new THREE.Mesh(this.boxGeometry, new THREE.MeshPhongMaterial({ color: 0x3399dd }));
-      target.position.set(0, 100, 0);
-      target.scale.set(0.075, 0.075, 0.075);
-      target.castShadow = true;
-      this.environment.scene.add(target);
-      this.environment.draggableObjects.unshift(target);
+      //var target = new THREE.Mesh(this.boxGeometry, new THREE.MeshPhongMaterial({ color: 0x3399dd }));
+      //target.position.set(0, 100, 0);
+      //target.scale.set(0.075, 0.075, 0.075);
+      //target.castShadow = true;
+      //this.environment.scene.add(target);
+      //this.environment.draggableObjects.unshift(target);
 
       this.goldenContainer.layoutManager.eventHub.on('poseUpdate', (data) => this.setArmAngles(data));
       this.goldenContainer.layoutManager.eventHub.emit('Start');
