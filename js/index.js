@@ -84,7 +84,7 @@ function initialize(){
                 allowJs: true,
                 moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
             });
-            //monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+            monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
 
             // Golden Layout Typescript definitions...
             fetch("/node_modules/golden-layout/index.d.ts").then((response) => {
@@ -125,7 +125,6 @@ function initialize(){
             // Refresh the code once every couple seconds if necessary
             setInterval(()=>{ 
                 let newCode = monacoEditor.getValue();
-                container.setState({ code: newCode });
                 if(newCode !== container.getState().code){
                     // Clear Errors
                     monaco.editor.setModelMarkers(monacoEditor.getModel(), 'test', []);
@@ -135,6 +134,7 @@ function initialize(){
 
                     window.eval(newCode); 
                 }
+                container.setState({ code: newCode });
             }, 2000);
 
             window.eval(state.code); 

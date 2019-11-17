@@ -1,5 +1,6 @@
 var Environment = function (goldenContainer) {
     this.time = new THREE.Clock();
+    this.time.autoStart = true;
     this.lastTimeRendered = 0.0;
     this.camera = new THREE.PerspectiveCamera(45, 1, 1, 2000); //new THREE.OrthographicCamera(300 / - 2, 300 / 2, 300 / 2, 300 / - 2, 1, 1000);
     this.scene = new THREE.Scene();
@@ -90,12 +91,12 @@ var Environment = function (goldenContainer) {
   
     this.initArm = function () {
       //Assemble the Robot Arm
-      var base = this.addJoint(this.environment.scene, [0, 0, 0], [0, 1, 0], [0, 0], [0.05, 0.1, 0.05], [0, 5, 0]);
-      var firstJoint = this.addJoint(base, [0, 11.52001, 0], [0, 1, 0], [-180, 180], [0.1, 0.1, 0.1], [0, 2.5, 0]);
-      var secondJoint = this.addJoint(firstJoint, [-6.55, 4.6, 0.0], [1, 0, 0], [-90, 90], [0.1, 0.45, 0.1], [-3.450041, 14.7, 0]);
-      var thirdJoint = this.addJoint(secondJoint, [1.247041, 32.02634, -0.0739485], [1, 0, 0], [-150, 150], [0.05, 0.35, 0.05], [2.8, 15.14, 0]);
-      var fourthJoint = this.addJoint(thirdJoint, [2.984276, 30.01859, 0.0], [1, 0, 0], [-130, 130], [0.05, 0.05, 0.05], [4.8, 0.17, 0]);
-      var fifthJoint = this.addJoint(fourthJoint, [4.333822, 4.200262, 0.0], [0, 1, 0], [-180, 180], [0.1, 0.035, 0.035], [3.156178, 0.3, 0]);
+      this.base         = this.addJoint(this.environment.scene, [0, 0, 0], [0, 1, 0], [0, 0], [0.05, 0.1, 0.05], [0, 5, 0]);
+      this.firstJoint   = this.addJoint(base,        [0, 11.52001, 0], [0, 1, 0], [-180, 180], [0.1, 0.1, 0.1], [0, 2.5, 0]);
+      this.secondJoint  = this.addJoint(firstJoint,  [-6.55, 4.6, 0.0], [1, 0, 0], [-90, 90], [0.1, 0.45, 0.1], [-3.450041, 14.7, 0]);
+      this.thirdJoint   = this.addJoint(secondJoint, [1.247041, 32.02634, -0.0739485], [1, 0, 0], [-150, 150], [0.05, 0.35, 0.05], [2.8, 15.14, 0]);
+      this.fourthJoint  = this.addJoint(thirdJoint,  [2.984276, 30.01859, 0.0], [1, 0, 0], [-130, 130], [0.05, 0.05, 0.05], [4.8, 0.17, 0]);
+      this.fifthJoint   = this.addJoint(fourthJoint, [4.333822, 4.200262, 0.0], [0, 1, 0], [-180, 180], [0.1, 0.035, 0.035], [3.156178, 0.3, 0]);
       this.endEffector = new THREE.Group();
       fifthJoint.add(this.endEffector);
       this.endEffector.position.set(8.3, 1.0, 0.0);
@@ -112,14 +113,14 @@ var Environment = function (goldenContainer) {
     }
   
     this.addJoint = function (base, position, axis, limits, size, graphicsOffset) {
-      var joint = new THREE.Group();
+      let joint = new THREE.Group();
       base.add(joint);
       joint.position.set(position[0], position[1], position[2]);
-      joint.axis = new THREE.Vector3(axis[0], axis[1], axis[2]);
+      joint.axis     = new THREE.Vector3(axis[0], axis[1], axis[2]);
       joint.minLimit = limits[0] * 0.0174533;
       joint.maxLimit = limits[1] * 0.0174533;
       this.IKJoints.push(joint);
-      var box = new THREE.Mesh(this.boxGeometry, this.white);
+      let box = new THREE.Mesh(this.boxGeometry, this.white);
       joint.add(box);
       box.scale.set(size[0], size[1], size[2]);
       box.position.set(graphicsOffset[0], graphicsOffset[1], graphicsOffset[2]);
