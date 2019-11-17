@@ -1,7 +1,7 @@
 var robotContainer, monacoEditor, loadedState, 
 dexterViewport, consoleContainer, gui, dexWS, 
 GUIState, connectWebsocket, disconnectWebsocket, 
-sendCommand, count = 0;
+sendCommand, count = 0, focused = true;
 
 var starterCode = 
 `// Welcome to DexBench Programming Environment!
@@ -27,7 +27,6 @@ function homeAxes()       { sendCommand("a 0 0 0 0 0 0 0 ;"); }
 function bendAxes()       { sendCommand("a 0 0 100000 0 0 0 0 ;"); }
 function followMe()       { sendCommand("S RunFile setFollowMeMode.make_ins ;"); }
 function keepPosition()   { sendCommand("S RunFile setKeepPositionMode.make_ins ;"); }
-
 `;
 
 // Functions to be overwritten by the editor window
@@ -170,7 +169,7 @@ function initialize(){
     });
 
     // Set up the Websocket Connection to the Dexter ----------------------
-    var pulse = setInterval(function(){ if(document.hasFocus()){ getDexterStatus(); } }, 16);
+    var pulse = setInterval(function(){ getDexterStatus(); }, 16);
     connectWebsocket = function (ipAndPort) {
         //disconnectWebsocket();
         console.log("Attempting to connect to Dexter at "+ipAndPort+"...");
@@ -243,10 +242,14 @@ function initialize(){
     }
 
     function getDexterStatus() { 
-        if(dexWS && dexWS.readyState == 1){ 
+        if(dexWS && dexWS.readyState == 1 && focused){ 
             dexWS.send("1 " + (count++) + " 1 undefined g ;"); 
         } 
     }
+
+    window.onblur  = function (){ focused = false; }
+    window.onfocus = function (){ focused = true;  }
+    document.onblur = window.onblur; document.onfocus = window.onfocus;
 
     myLayout.init();
 }
