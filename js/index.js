@@ -1,15 +1,13 @@
 var myLayout, monacoEditor, loadedState, 
 dexterViewport, consoleContainer, gui, dexWS, 
 GUIState, connectWebsocket, disconnectWebsocket, 
-sendCommand, count = 0, focused = true;
+sendCommand, GUIState, count = 0, focused = true;
 
 let starterCode = 
 `// Welcome to DexBench Programming Environment!
 // Please make sure your Dexter is turned on and the 
-// 'IPAddr' is set to the Dexter's IP.  Then press "Connect".
+// 'ip' is set to the Dexter's IP.  Then press "Connect".
 // This code is saved to your localStorage, so don't be afraid to leave and come back!
-
-GUIState = { ip: '192.168.1.142:3000' };
 
 // GUI uses https://github.com/automat/controlkit.js
 gui.addPanel({label: 'Dexter Control Panel'})
@@ -45,6 +43,7 @@ function initialize(){
                     type: 'component',
                     componentName: 'robotView',
                     title:'Dexter View',
+                    componentState: { ip: '192.168.1.142:3000' },
                     isClosable: false
                 },{
                     type: 'column',
@@ -126,11 +125,8 @@ function initialize(){
             // Refresh the code once every couple seconds if necessary
             setInterval(()=>{ 
                 let newCode = monacoEditor.getValue();
+                container.setState({ code: newCode });
                 if(newCode !== container.getState().code){
-                    container.setState({
-                        code: newCode
-                    });
-
                     // Clear Errors
                     monaco.editor.setModelMarkers(monacoEditor.getModel(), 'test', []);
                     consoleContainer.innerHTML = "";
@@ -146,7 +142,9 @@ function initialize(){
     });
 
     // Set up the 3D Viewport into the Robot
-    myLayout.registerComponent('robotView', function(container){
+    myLayout.registerComponent('robotView', function(container, state){
+        GUIState = state;
+        container.setState(GUIState);
         setTimeout(()=> { 
             let floatingGUIContainer = document.createElement("div");
             floatingGUIContainer.style.position = 'absolute';
@@ -220,8 +218,7 @@ function initialize(){
         }
         dexWS.onerror = function (error) {
             self.status = "error" + error;
-            console.error(error);
-            console.log(error);
+            console.log("Connection Failed! Either restart your robot or check your IP and try again. See your browser's error console for more details.");
         }
         dexWS.onmessage = function (socket) {
             let msg = "" //start new message
