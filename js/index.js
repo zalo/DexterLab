@@ -1,7 +1,7 @@
 var robotContainer, monacoEditor, loadedState, 
 dexterViewport, consoleContainer, gui, dexWS, 
 GUIState, connectWebsocket, disconnectWebsocket, 
-sendCommand;
+sendCommand, count = 0;
 
 var starterCode = 
 `// Welcome to DexBench Programming Environment!
@@ -170,7 +170,7 @@ function initialize(){
     });
 
     // Set up the Websocket Connection to the Dexter ----------------------
-    var pulse, count = 0;
+    var pulse = setInterval(function(){ if(document.hasFocus()){ getDexterStatus(); } }, 16);
     connectWebsocket = function (ipAndPort) {
         //disconnectWebsocket();
         console.log("Attempting to connect to Dexter at "+ipAndPort+"...");
@@ -235,12 +235,12 @@ function initialize(){
         }
     }
 
-    //window.onbeforeunload = function(){
-    //    if(dexWS && dexWS.readyState == 1){ 
-    //        disconnectWebsocket();
-    //        return "Disconnecting Websocket Connection...";
-    //    }
-    // }
+    window.onbeforeunload = function(){
+        if(dexWS && dexWS.readyState == 1){ 
+            disconnectWebsocket();
+            return "Disconnecting Websocket Connection...";
+        }
+    }
 
     function getDexterStatus() { 
         if(dexWS && dexWS.readyState == 1){ 
@@ -249,12 +249,4 @@ function initialize(){
     }
 
     myLayout.init();
-    //setTimeout(()=>{
-    //    myLayout.eventHub.on('Start',  (data) => { Start();  });
-    //    myLayout.eventHub.on('Update', (data) => { Update(); });
-    //}, 0.2);
-
-    setTimeout(()=>{
-        pulse = setInterval(function(){ getDexterStatus(); }, 16);
-    }, 2);
 }
