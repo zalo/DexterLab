@@ -87,23 +87,23 @@ function initialize(){
             monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
 
             // Golden Layout Typescript definitions...
-            fetch("/node_modules/golden-layout/index.d.ts").then((response) => {
+            fetch("./node_modules/golden-layout/index.d.ts").then((response) => {
                 response.text().then(function (text) {
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file://./node_modules/golden-layout/index.d.ts');
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/golden-layout/index.d.ts');
                 });
             }).catch(error => console.log(error.message));
 
             // Three.js Typescript definitions...
-            fetch("/node_modules/three/build/three.d.ts").then((response) => {
+            fetch("./node_modules/three/build/three.d.ts").then((response) => {
                 response.text().then(function (text) {
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file://./node_modules/three/build/three.d.ts');
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/three/build/three.d.ts');
                 });
             }).catch(error => console.log(error.message));
 
             // Add Symbols from ControlKit.js...
-            fetch("/node_modules/controlkit/bin/controlkit.d.ts").then((response) => {
+            fetch("./node_modules/controlkit/bin/controlkit.d.ts").then((response) => {
                 response.text().then(function (text) {
-                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file://./node_modules/controlkit/bin/controlkit.d.ts');
+                    monaco.languages.typescript.javascriptDefaults.addExtraLib(text, 'file:///node_modules/controlkit/bin/controlkit.d.ts');
                 });
             }).catch(error => console.log(error.message));
 
